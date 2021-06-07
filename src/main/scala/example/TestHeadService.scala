@@ -13,8 +13,9 @@ object TestHeadService extends ZioTest.TestLoaderService {
   ): IO[Status, TestResponse] = for {
     _ <- ZIO.unit
     _ = println("started")
-    firstElementO <- request.runHead
-    _ = println(s"take head opt with is some ${firstElementO.isDefined}")
+    // firstElementO <- request.runCollect.map(_.headOption)  // memory dont increase
+    firstElementO <- request.runHead // memory increase
+    _ = println(s"take head opt with is some ${firstElementO.get.value}")
     fe <- ZIO.fromOption(firstElementO).mapError(_ => Status.DATA_LOSS)
     _ = println("took for option")
     _ = println(s"size of first element limit ${fe.data.asReadOnlyByteBuffer().limit()} capacity ${fe.data.asReadOnlyByteBuffer().capacity()}")
